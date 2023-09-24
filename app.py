@@ -14,7 +14,6 @@ def get_db():
     with SessionLocal() as db:
         return db
 
-
 @app.get("/user/{id}", response_model=UserGet)
 def get_user_id(id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == id).first()

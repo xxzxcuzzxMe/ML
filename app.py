@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc,func
 from database import SessionLocal 
 from table_user import User  
 from table_post import Post 
@@ -41,6 +41,13 @@ def get_action_user(id: int, limit: int = 10, db: Session = Depends(get_db)):
 @app.get("/post/{id}/feed", response_model = List[FeedGet])
 def get_action_post(id: int, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Feed).filter(Feed.post_id == id).order_by(desc(Feed.time)).limit(limit).all()
+
+@app.get("/post/recommendations/", response_model=List[PostGet])
+def get_recommendations(id : int , limit: int = 10, db: Session = Depends(get_db)):
+    result = db.query(Post).select_from(Feed).filter(Feed.action == 'like').join(Post).group_by(Post.id).order_by(func.count(Post.id).desc()).limit(
+        limit).all()
+    return result
+
 
 
 

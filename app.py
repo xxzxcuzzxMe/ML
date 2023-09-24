@@ -42,12 +42,10 @@ def get_action_user(id: int, limit: int = 10, db: Session = Depends(get_db)):
 def get_action_post(id: int, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Feed).filter(Feed.post_id == id).order_by(desc(Feed.time)).limit(limit).all()
 
-@app.get("/post/recommendations/", response_model=List[PostGet])
-def get_recommendations(id : int , limit: int = 10, db: Session = Depends(get_db)):
-    result = db.query(Post).select_from(Feed).filter(Feed.action == 'like').join(Post).group_by(Post.id).order_by(func.count(Post.id).desc()).limit(
+@app.get("/post/recommendations/", response_model = List[PostGet])
+def get_recommendation(id: int, limit: int = 10, db: Session = Depends(get_db)):
+    return db.query(Post).select_from(Feed).filter(Feed.action == 'like').join(Post).group_by(Post.id).order_by(func.count(Post.id).desc()).limit(
         limit).all()
-    return result
-
 
 
 
